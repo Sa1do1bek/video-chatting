@@ -1,35 +1,24 @@
-# Multi-Stage Dockerfile for Spring Boot
+# Dockerfile
 
-# Start with a base image that is lightweight and secure
-FROM openjdk:17-alpine AS build
+FROM gradle:latest AS build
 
-# Set the working directory
-WORKDIR /app
-
-# Copy only the necessary files for dependency resolution
-COPY pom.xml .
-COPY src ./src
-
-# Resolve dependencies
-RUN ./mvnw dependency:go-offline -B
-
-# Package the application
-RUN ./mvnw package -DskipTests
-
-# Start a new stage for the final image
-FROM openjdk:17-jre-alpine
+# Copy the Gradle wrapper and build files
+COPY gradlew gradle/ /app/ 
+COPY build.gradle /app/ 
+COPY settings.gradle /app/ 
+COPY src /app/src
 
 # Set the working directory
 WORKDIR /app
 
-# Copy the jar from the build stage
-COPY --from=build /app/target/*.jar app.jar
+# Build the project using Gradle
+RUN ./gradlew build
 
-# Expose the application on a specific port
-EXPOSE 8080
+# Final stage: Create a minimal image with the jar
+FROM openjdk:11-jre-slim
 
-# Define health check to ensure the app is running
-HEALTHCHECK --interval=30s --timeout=10s --retries=3 CMD curl -f http://localhost:8080/actuator/health || exit 1
+# Copy the built jar from the previous stage
+COPY --from=build /app/build/libs/*.jar app.jar
 
-# Run the application
-ENTRYPOINT ["java","-jar","/app/app.jar"]
+# Run the jar file
+ENTRYPOINT ["java","-jar","/app.jar"]
