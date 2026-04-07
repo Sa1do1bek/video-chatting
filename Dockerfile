@@ -1,25 +1,25 @@
-# 1. Используем официальный образ Java с Maven
+# 1. Этап сборки (Build stage)
 FROM maven:3.9.8-eclipse-temurin-17 AS build
-
 WORKDIR /app
 
-COPY target/dtect-springboot-0.0.1-SNAPSHOT.jar app.jar
+# Сначала копируем только pom.xml, чтобы закэшировать зависимости
+COPY pom.xml .
 RUN mvn dependency:go-offline -B
 
+# Теперь копируем исходный код
 COPY src ./src
 
-# Собираем проект
+# Собираем проект (теперь JAR создастся внутри контейнера)
 RUN mvn clean package -DskipTests
 
-# 2. Используем минимальный JDK образ для запуска
+# 2. Этап запуска (Run stage)
 FROM eclipse-temurin:21-jdk
 WORKDIR /app
 
-# Копируем jar из предыдущего build stage
+# Копируем JAR, созданный на этапе 'build'
 COPY --from=build /app/target/*.jar app.jar
 
-# Указываем порт и команду запуска
-# Fly.io и Railway используют переменную PORT из окружения
 EXPOSE 8081
-# Используем переменную PORT из окружения, если она установлена
-CMD ["sh", "-c", "java -Dspring.profiles.active=${SPRING_PROFILES_ACTIVE:-default} -jar app.jar"]
+
+# Запуск с поддержкой переменной PORT (полезно для облачных сервисов)
+CMD ["sh", "-c", "java -Dserver.port=${PORT:-8081} -Dspring.profiles.active=${SPRING_PROFILES_ACTIVE:-default} -jar app.jar"]
