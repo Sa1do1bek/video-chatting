@@ -1,0 +1,21 @@
+version: 1
+services:
+  web:
+    type: web
+    name: Video Chatting
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      DATABASE_URL: postgres://user:password@db:5432/database_name
+    autoDeploy: true
+  db:
+    type: postgres
+    name: PostgreSQL
+    plan: free
+    version: "13"
+    envVars:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: database_name
