@@ -1,0 +1,21 @@
+# Ignored files and directories
+
+# Ignore all files with the following extensions
+*.log
+*.tmp
+*.swp
+*.DS_Store
+
+# Ignore node_modules
+node_modules/
+
+# Ignore build artifacts
+build/
+dist/
+
+# Ignore other unnecessary files
+*.bak
+*.exe
+*.dll
+.editorconfig
+.vscode/
