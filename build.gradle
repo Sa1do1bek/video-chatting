@@ -8,7 +8,9 @@ group = 'com.example.darks'
 version = '0.0.1-SNAPSHOT'
 description = 'video-chatting'
 
-
+springBoot {
+    mainClass = 'com.example.darks.videochatting.VideoChattingApplication'
+}
 
 repositories {
     mavenCentral()
