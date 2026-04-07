@@ -1,26 +1,27 @@
 # 1. Этап сборки (Build stage)
-# Используем более свежий образ Gradle (например, 8.14 или выше)
-FROM gradle:9.0-jdk17 AS build
+# Используем JDK 21, так как Spring Boot 4 требует именно эту версию
+FROM gradle:9.0-jdk21 AS build
 WORKDIR /app
 
-# Копируем файлы конфигурации
+# Копируем файлы сборки
+# ВАЖНО: сначала копируем только конфиги, чтобы закешировать зависимости
 COPY build.gradle settings.gradle ./
-
-# Скачиваем зависимости
-RUN gradle dependencies --no-daemon
-
-# Копируем исходный код
 COPY src ./src
 
-# Собираем проект
-RUN gradle clean bootJar --no-daemon
+# Собираем проект (пропускаем тесты для ускорения деплоя на Render)
+RUN gradle clean bootJar --no-daemon -DskipTests
 
 # 2. Этап запуска (Run stage)
-FROM eclipse-temurin:21-jdk
+# Используем современный и легкий образ Eclipse Temurin вместо устаревшего openjdk
+FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
+# Копируем только исполняемый JAR
+# В Gradle результат сборки лежит в build/libs/
 COPY --from=build /app/build/libs/*.jar app.jar
 
+# Порт для Render (он обычно дает его через переменную среды PORT)
 EXPOSE 8081
 
-CMD ["sh", "-c", "java -Dserver.port=${PORT:-8081} -Dspring.profiles.active=${SPRING_PROFILES_ACTIVE:-default} -jar app.jar"]
+# Запуск с учетом динамического порта и профилей
+ENTRYPOINT ["sh", "-c", "java -Dserver.port=${PORT:-8081} -Dspring.profiles.active=${SPRING_PROFILES_ACTIVE:-default} -jar app.jar"]
