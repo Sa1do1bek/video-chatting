@@ -1,31 +1,35 @@
-# 1. Этап сборки (Build stage)
-FROM gradle:8.7-jdk17 AS build
+# Multi-Stage Dockerfile for Spring Boot
+
+# Start with a base image that is lightweight and secure
+FROM openjdk:17-alpine AS build
+
+# Set the working directory
 WORKDIR /app
 
-# Копируем файлы конфигурации Gradle для кэширования зависимостей
-COPY build.gradle settings.gradle ./
-# Если у вас есть папка gradle (wrapper), ее тоже стоит скопировать
-# COPY gradle ./gradle
-# COPY gradlew ./
-
-# Скачиваем зависимости (опционально, ускоряет повторные сборки)
-RUN gradle dependencies --no-daemon
-
-# Копируем исходный код
+# Copy only the necessary files for dependency resolution
+COPY pom.xml .
 COPY src ./src
 
-# Собираем проект
-RUN gradle clean bootJar --no-daemon
+# Resolve dependencies
+RUN ./mvnw dependency:go-offline -B
 
-# 2. Этап запуска (Run stage)
-FROM eclipse-temurin:21-jdk
+# Package the application
+RUN ./mvnw package -DskipTests
+
+# Start a new stage for the final image
+FROM openjdk:17-jre-alpine
+
+# Set the working directory
 WORKDIR /app
 
-# Копируем собранный jar из этапа build
-# В Gradle результат сборки обычно лежит в build/libs/
-COPY --from=build /app/build/libs/*.jar app.jar
+# Copy the jar from the build stage
+COPY --from=build /app/target/*.jar app.jar
 
-EXPOSE 8081
+# Expose the application on a specific port
+EXPOSE 8080
 
-# Запуск приложения
-CMD ["sh", "-c", "java -Dserver.port=${PORT:-8081} -Dspring.profiles.active=${SPRING_PROFILES_ACTIVE:-default} -jar app.jar"]
+# Define health check to ensure the app is running
+HEALTHCHECK --interval=30s --timeout=10s --retries=3 CMD curl -f http://localhost:8080/actuator/health || exit 1
+
+# Run the application
+ENTRYPOINT ["java","-jar","/app/app.jar"]
