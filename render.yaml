@@ -1,21 +1,33 @@
-version: 1
 services:
-  web:
-    type: web
-    name: Video Chatting
-    env: node
+  # Настройка основного приложения (Spring Boot)
+  - type: web
+    name: video-chatting
+    runtime: docker # Указываем Docker вместо node
     plan: free
-    buildCommand: npm install
-    startCommand: npm start
+    region: frankfurt # Или любой другой регион, близкий к вам
     envVars:
-      DATABASE_URL: postgres://user:password@db:5432/database_name
-    autoDeploy: true
-  db:
-    type: postgres
-    name: PostgreSQL
+      - key: SPRING_DATASOURCE_URL
+        fromService:
+          type: postgres
+          name: video-db
+          property: connectionString
+      - key: SPRING_DATASOURCE_USERNAME
+        fromService:
+          type: postgres
+          name: video-db
+          property: user
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromService:
+          type: postgres
+          name: video-db
+          property: password
+      - key: SPRING_JPA_HIBERNATE_DDL_AUTO
+        value: update # Автоматически создаст таблицы при первом запуске
+
+  # Настройка базы данных
+  - type: postgres
+    name: video-db
+    region: frankfurt
     plan: free
-    version: "13"
-    envVars:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: database_name
+    databaseName: video_chat_db
+    user: admin_user
