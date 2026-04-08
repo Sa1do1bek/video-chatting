@@ -3,11 +3,14 @@ package com.example.darks.videochatting.services.user_service;
 import com.example.darks.videochatting.dtos.auth.RegisterRequest;
 import com.example.darks.videochatting.dtos.auth.RegisterResponse;
 import com.example.darks.videochatting.dtos.base.ApiResponse;
+import com.example.darks.videochatting.exceptions.UserNotFoundException;
 import com.example.darks.videochatting.models.User;
 import com.example.darks.videochatting.repositories.UserRepository;
 import com.example.darks.videochatting.ws_security.WSService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -28,5 +31,11 @@ public class UserService implements IUserService{
                         savedUser.getId(), savedUser.getUsername(),
                         wsService.generateWSToken(savedUser.getId(), savedUser.getUsername())),
                 "User Created");
+    }
+
+    @Override
+    public User getUserById(UUID userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found!"));
     }
 }

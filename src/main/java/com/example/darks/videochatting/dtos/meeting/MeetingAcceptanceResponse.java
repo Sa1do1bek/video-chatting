@@ -1,8 +1,8 @@
-package com.example.darks.videochatting.dtos.video_chatting;
+package com.example.darks.videochatting.dtos.meeting;
 
 import java.util.UUID;
 
-public record JaaSTokenResponse(
+public record MeetingAcceptanceResponse(
         UUID inviterId,
         UUID accepterId,
         String room

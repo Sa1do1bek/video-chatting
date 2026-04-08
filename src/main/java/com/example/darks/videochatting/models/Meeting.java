@@ -17,31 +17,28 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(
-        name = "users",
+        name = "meetings",
         indexes = {
                 @Index(name = "idx_username", columnList = "username")
         }
 )
-public class User {
+public class Meeting {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(nullable = false)
     private UUID id;
 
-//    @Column(nullable = false, unique = true)
-//    private String email;
+    @ManyToOne
+    @JoinColumn(name = "inviter_id", nullable = false)
+    private User inviter;
 
-    @Column(nullable = false, unique = true)
-    private String username;
-//    private String password;
-//
-//    private boolean isModerator;
-//
+    @ManyToOne
+    @JoinColumn(name = "receiver_id", nullable = false)
+    private User receiver;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
-//
-//    private LocalDateTime lastActivityTime;
+    private LocalDateTime endedAt;
 
+    private UUID roomId;
 }
