@@ -6,18 +6,16 @@ import com.example.darks.videochatting.dtos.base.ApiResponse;
 import com.example.darks.videochatting.exceptions.UserNotFoundException;
 import com.example.darks.videochatting.models.User;
 import com.example.darks.videochatting.repositories.UserRepository;
-import com.example.darks.videochatting.ws_security.WSService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class UserService implements IUserService{
 
-    private final WSService wsService;
+//    private final WSService wsService;
     private final UserRepository userRepository;
 
     @Override
@@ -29,8 +27,7 @@ public class UserService implements IUserService{
 
         return new ApiResponse(
                 new RegisterResponse(
-                        savedUser.getId(), savedUser.getUsername(),
-                        wsService.generateWSToken(savedUser.getId(), savedUser.getUsername())),
+                        savedUser.getId(), savedUser.getUsername()),
                 "User Created");
     }
 
