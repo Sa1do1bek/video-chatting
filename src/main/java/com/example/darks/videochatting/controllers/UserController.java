@@ -21,4 +21,8 @@ public class UserController {
     public ResponseEntity<ApiResponse> register(@RequestBody RegisterRequest request) {
         return ResponseEntity.ok(userService.register(request));
     }
+
+    public  ResponseEntity<ApiResponse> getAllUsers() {
+        return ResponseEntity.ok(userService.getAllUsers());
+    }
 }

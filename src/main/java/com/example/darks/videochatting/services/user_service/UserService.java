@@ -10,6 +10,7 @@ import com.example.darks.videochatting.ws_security.WSService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -37,5 +38,10 @@ public class UserService implements IUserService{
     public User getUserById(UUID userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found!"));
+    }
+
+    @Override
+    public ApiResponse getAllUsers() {
+        return new ApiResponse(userRepository.findAll(), "All users!");
     }
 }

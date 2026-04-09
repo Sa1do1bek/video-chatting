@@ -9,4 +9,5 @@ import java.util.UUID;
 public interface IUserService {
     ApiResponse register(RegisterRequest request);
     User getUserById(UUID userId);
+    ApiResponse getAllUsers();
 }

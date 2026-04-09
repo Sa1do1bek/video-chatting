@@ -17,17 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/meetings")
 @RequiredArgsConstructor
 public class VideoChattingController {
 
     private final JaaService jaaService;
     private final SimpMessagingTemplate messagingTemplate;
-
-//    @PostMapping()
-//    public ResponseEntity<ApiResponse> startMeeting() {
-//        return ResponseEntity.ok(jaaService.createMeeting());
-//    }
 
     @MessageMapping("/calls/invite/{userId}")
     public void inviteUser(@DestinationVariable UUID userId,
