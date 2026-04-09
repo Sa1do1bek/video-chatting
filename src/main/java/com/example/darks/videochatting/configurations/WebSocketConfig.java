@@ -1,6 +1,5 @@
 package com.example.darks.videochatting.configurations;
 
-import com.example.darks.videochatting.ws_security.AuthHandshakeInterceptor;
 import com.example.darks.videochatting.ws_security.UserHandshakeHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
@@ -14,7 +13,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    private final AuthHandshakeInterceptor authInterceptor;
+//    private final AuthHandshakeInterceptor authInterceptor;
     private final UserHandshakeHandler handshakeHandler;
 
     @Override
