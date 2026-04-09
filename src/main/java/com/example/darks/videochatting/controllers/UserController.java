@@ -5,10 +5,7 @@ import com.example.darks.videochatting.dtos.base.ApiResponse;
 import com.example.darks.videochatting.services.user_service.IUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -22,6 +19,7 @@ public class UserController {
         return ResponseEntity.ok(userService.register(request));
     }
 
+    @GetMapping
     public  ResponseEntity<ApiResponse> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
